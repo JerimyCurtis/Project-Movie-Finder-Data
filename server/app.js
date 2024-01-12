@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 //use parser
 app.use(bodyParser.json());
 //add routes
-app.get('/', function (req, res) => {
+app.get('/fetch-movie', async (req, res) => {
     //try
     try {
         //use api
