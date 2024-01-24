@@ -1,8 +1,8 @@
+// Load dotenv configuration first
+require("dotenv").config();
 const express = require('express');
 const morgan = require('morgan');
 const axios = require('axios');
-// Load dotenv configuration first
-require("dotenv").config();
 const omdbApiKey = process.env.OMDB_API_KEY;
 
 // Add body-parser to parse JSON and URL-encoded data
