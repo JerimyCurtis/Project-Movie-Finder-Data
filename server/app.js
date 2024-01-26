@@ -1,36 +1,33 @@
+// // Load dotenv configuration first
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const axios = require('axios');
-require('dotenv').config(); // Load dotenv configuration first
-const omdbApiKey = process.env.OMDB_API_KEY;
-//add body-parser to json and .js
-const bodyParser = require('body-parser');
-//open port
-const PORT = process.env.PORT || 3030
-//use express to create server
+
+// Use the real API key from .env or a fallback for testing
+const omdbApiKey = process.env.OMDB_API_KEY || 'fallback_api_key';
+
 const app = express();
-//use morgan for logging
 app.use(morgan('dev'));
-//parse app
-app.use(bodyParser.urlencoded({ extended: false }));
-//use parser
-app.use(bodyParser.json());
-// Define a route for the root path
-app.get('/', (req, res) => {
-    res.send('Hello, this is your Express server!');
-  });
-//add routes
-app.get('/fetch-movie', async (req, res) => {
-    //try
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.get('/', async (req, res) => {
     try {
-        //use api
-        const response = await axios.get(`http://www.omdbapi.com/?i=tt3896198&apikey=${omdbApiKey}`);
-        //respond with data from omdb
+        let response;
+        if (req.query.i) {
+            response = await axios.get(`http://www.omdbapi.com/?i=${req.query.i}&apikey=${omdbApiKey}`);
+        } else if (req.query.t) {
+            response = await axios.get(`http://www.omdbapi.com/?t=${encodeURIComponent(req.query.t)}&apikey=${omdbApiKey}`);
+        } else {
+            return res.status(400).send('No query parameters provided');
+        }
+
         res.json(response.data);
     } catch (error) {
-        console.error('Error fetching movie data:', error.message);
+        console.error('Error handling request:', error.message);
         res.status(500).send('Internal Server Error');
     }
 });
-//export response
+
 module.exports = app;
